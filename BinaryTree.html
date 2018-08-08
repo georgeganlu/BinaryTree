@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div>
+        asdfadf
+    </div>
+    <script>
+        // console.log(123);  实现二叉数。
+        // 先要形成一个类，每一个list的值过来，都要形成一个树形。  ---把具体的问题实例化。
+        class TreeObj{
+            constructor (key) {  // key是list里的每一个值，这里要形成对象。
+                this.key = key;
+                this.left = null;
+                this.right = null;
+            }
+        } 
+
+        class BinaryTree {
+            constructor () {
+                this.root = null;
+                this.listArr = []
+            }
+            insert (key) {       
+                let newObjValue = new TreeObj(key);
+                if (this.root === null) {
+                    this.root = newObjValue;
+                } else {
+                    this.insertNode (this.root, newObjValue);
+                }
+            }
+            insertNode (root, newObjValue) {
+                if (root.key < newObjValue.key) { // 小于的话排在右边
+                    // 小于排右边的同时，还要进行一次判断就是看，这个根节点有没有现成的右节点。
+                    if (root.right === null) {
+                        root.right = newObjValue;
+                    } else {
+                        // else才是算法的重点。。如果右根节点不是为null的话, 在次把根节点的右节点当作根节点进行递归。
+                        this.insertNode(root.right, newObjValue);
+                    }
+                } else {
+                    if (root.left === null) {
+                        root.left = newObjValue;
+                    } else {
+                        this.insertNode(root.left, newObjValue);
+                    }
+                } 
+            }            
+            // 中序遍历算法。---先遍历节点值的左节点，在打印当前节点值。----作用是按从小倒大的序顺排列
+            middleTract (root) {
+                if (root !== null) {
+                    this.middleTract(root.left);
+                    console.log(root.key);
+                    this.middleTract(root.right);
+                }
+                // 递归代入的是子节点，能重复父节点的操作。
+            }
+
+            // 前序遍历算法。 ---- 作用是快速的复制一个二叉数，变成一个list
+            prevTract () {
+                if (root !== null) {
+                    console.log(root.key);
+                    this.middleTract(root.left);                    
+                    this.middleTract(root.right);
+                }
+            }
+            nextTract () {
+                if (root !== null) {                   
+                    this.middleTract(root.left);                    
+                    this.middleTract(root.right);
+                    console.log(root.key);
+                }
+            }
+            // 节点查找的方法。--查找最小的数，就是寻找到最左下角的一个节点。
+            searchMin (node) {
+                if (node !== null) {
+                   while (node && node.left !== null) {
+                       node = node.left;
+                   }
+                   console.log(node.key);
+                   return node.key;
+                } 
+                return null
+            }
+
+            searchMax (node) {
+                if (node !== null) {
+                    while (node && node.right !== null) {  // 一直向右来查找。
+                        node = node.right;
+                    }
+                    console.log(node.key);
+                    return node.key;
+                }
+                return null;
+            }
+
+            // 寻找节点的方法, 寻找为true的话，就是找到了。 false就是没有找到。
+            searchNode (node, key) {
+                if (node.key > key) {
+                   if (node.left !== null) {
+                      return this.searchNode(node.left, key);
+                   } else {
+                       return false;
+                   }                   
+                } else if (node.key < key) {
+                   if (node.right !== null) {
+                     return this.searchNode(node.right, key);
+                   } else {
+                       return false;
+                   }                
+                } else {
+                    return true;
+                }
+            } 
+
+            finMinNode (node) {
+                if (node !== null) {
+                    while (node && node.left !== left) {
+                        node = node.left;                        
+                    }
+                    return node;
+                }
+                return null;
+            }
+            
+            // 删除节点。
+            remove (node, key) {
+                this.removeNode(node, key);
+            }
+            removeNode(node, key) {
+                if (node.key > key) {  // 如果大小这个key的话，就像下一层继续查找。删除是node节点的代替。
+                   if (node.left !== null) {
+                     node.left = this.removeNode(node.left, key);
+                     return node;
+                   } else {
+                       console.log("未找到这个节点");
+                   }                   
+                } else if (node.key < key) {
+                    if (node.right !== null) {
+                        node.right = this.removeNode(node.right, key);
+                        return node;
+                    } else {
+                        console.log("未找到这个节点");
+                    }                    
+                } else {
+                    if (node.left === null && node.right === null) {
+                        node = null;
+                        return node;
+                    } else if (node.left !== null && node.right === null) {
+                        node = node.left;
+                        return node;
+                    } else if (node.left === null && node.right !== null) {
+                        node = node.right;
+                        return node;
+                    } else {
+                        // 些时是都不等于空的情况。在次进行赋值删除的工作。  如果这个节点下面有两个子节点的话，就需要把这个节点下
+                        // 面的右节点下的最小值的节点的值取出赋值给要删除的节点，然后删除这个找到的最小节点。
+                        let newnode = this.finMinNode(node.right);
+                        node.key = newnode.key;
+                        // 赋值完成后，在次进行最后节点的删除操作。
+                        node.right = this.removeNode(node.right, node.key);
+                        return node;                                           
+                    }
+                }
+            }
+        }
+
+        let binaryTree = new BinaryTree();
+        let list = [8, 12, 3, 5, 79, -1, 4, 10, 7, 20];
+        list.forEach(key => {
+            binaryTree.insert(key);
+        });
+        // console.log(binaryTree);
+        // binaryTree.middleTract(binaryTree.root);
+        // binaryTree.searchMin(binaryTree.root);
+        // binaryTree.searchMax(binaryTree.root);
+        // console.log(binaryTree.searchNode(binaryTree.root, 20) ? 'found' : 'not found');
+        // console.log(binaryTree.searchNode(binaryTree.root, 19) ? 'found' : 'not found');
+        // console.log(binaryTree.searchNode(binaryTree.root, 79) ? 'found' : 'not found');
+        // console.log(binaryTree.searchNode(binaryTree.root, 11) ? 'found' : 'not found');
+        // console.log(binaryTree);
+        binaryTree.remove(binaryTree.root, 7);
+        console.log(binaryTree);
+    </script>
+</body>
+</html>
